@@ -46,6 +46,6 @@ SOLVER:
 TEST:
   IMS_PER_BATCH: 8
   DEBUG: True
-  WEIGHT: "path"
+  WEIGHT: "./outputs/veri/resnet50_epoch5.pth"
 
 OUTPUT_DIR: "./outputs/veri"
