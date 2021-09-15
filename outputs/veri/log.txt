@@ -1,9 +1,9 @@
-2021-09-15 07:30:14,361 reid_baseline INFO: Using 1 GPUS
-2021-09-15 07:30:14,361 reid_baseline INFO: Namespace(config_file='configs/veri_custom.yml', local_rank=0, opts=[], test=False)
-2021-09-15 07:30:14,362 reid_baseline INFO: Running with config:
+2021-09-15 12:45:07,372 reid_baseline INFO: Using 1 GPUS
+2021-09-15 12:45:07,373 reid_baseline INFO: Namespace(config_file='configs/veri_custom.yml', local_rank=0, opts=[], test=False)
+2021-09-15 12:45:07,373 reid_baseline INFO: Running with config:
 DATALOADER:
   NUM_INSTANCE: 4
-  NUM_WORKERS: 6
+  NUM_WORKERS: 4
   SAMPLER: softmax_triplet
 DATASETS:
   DATA_PATH: E:/datasets/VeRi/VeRi_with_plate
@@ -40,7 +40,7 @@ SOLVER:
   MAX_EPOCHS: 50
   MOMENTUM: 0.9
   OPTIMIZER_NAME: Adam
-  STEPS: (20, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225, 240, 255)
+  STEPS: (10, 20, 30, 40, 50)
   WARMUP_FACTOR: 0.01
   WARMUP_ITERS: 10
   WARMUP_METHOD: linear
@@ -49,18 +49,21 @@ SOLVER:
 TEST:
   CMC: [1, 5, 10]
   DEBUG: True
-  IMS_PER_BATCH: 4
+  IMS_PER_BATCH: 8
   MULTI_GPU: False
   RERANK: True
   VIS: False
   VIS_G_NUM: 5
   VIS_Q_NUM: 10
   WEIGHT: path
-2021-09-15 07:30:18,732 reid_baseline.train INFO: Using fp16 training
-2021-09-15 07:30:18,733 reid_baseline.train INFO: Trainer Built
-2021-09-15 07:31:25,847 reid_baseline.train INFO: Epoch[1] Iteration[100/4616] Loss: 7.330,Acc: 0.003, Base Lr: 1.09e-05
-2021-09-15 07:32:21,991 reid_baseline.train INFO: Epoch[1] Iteration[200/4616] Loss: 7.187,Acc: 0.003, Base Lr: 1.09e-05
-2021-09-15 07:33:17,608 reid_baseline.train INFO: Epoch[1] Iteration[300/4616] Loss: 7.089,Acc: 0.005, Base Lr: 1.09e-05
-2021-09-15 07:34:13,581 reid_baseline.train INFO: Epoch[1] Iteration[400/4616] Loss: 7.015,Acc: 0.006, Base Lr: 1.09e-05
-2021-09-15 07:35:08,473 reid_baseline.train INFO: Epoch[1] Iteration[500/4616] Loss: 6.953,Acc: 0.009, Base Lr: 1.09e-05
-2021-09-15 07:36:03,599 reid_baseline.train INFO: Epoch[1] Iteration[600/4616] Loss: 6.903,Acc: 0.009, Base Lr: 1.09e-05
+2021-09-15 12:45:12,342 reid_baseline.train INFO: Using fp16 training
+2021-09-15 12:45:12,343 reid_baseline.train INFO: Trainer Built
+2021-09-15 12:45:12,345 reid_baseline.train INFO: restoring latest checkpoint for epoch 2
+2021-09-15 12:45:12,345 reid_baseline.train INFO: loading model weights from outputs\veri\resnet50_epoch2.pth
+2021-09-15 12:45:12,503 reid_baseline.train INFO: loading optimizer weights from outputs\veri\resnet50_epoch2_optim.pth
+2021-09-15 12:46:26,131 reid_baseline.train INFO: Epoch[2] Iteration[100/4617] Loss: 6.162,Acc: 0.005, Base Lr: 1.09e-05
+2021-09-15 12:47:22,389 reid_baseline.train INFO: Epoch[2] Iteration[200/4617] Loss: 6.145,Acc: 0.013, Base Lr: 1.09e-05
+2021-09-15 12:48:17,993 reid_baseline.train INFO: Epoch[2] Iteration[300/4617] Loss: 6.157,Acc: 0.012, Base Lr: 1.09e-05
+2021-09-15 12:49:13,378 reid_baseline.train INFO: Epoch[2] Iteration[400/4617] Loss: 6.148,Acc: 0.010, Base Lr: 1.09e-05
+2021-09-15 12:50:07,923 reid_baseline.train INFO: Epoch[2] Iteration[500/4617] Loss: 6.153,Acc: 0.010, Base Lr: 1.09e-05
+2021-09-15 12:51:02,248 reid_baseline.train INFO: Epoch[2] Iteration[600/4617] Loss: 6.156,Acc: 0.010, Base Lr: 1.09e-05

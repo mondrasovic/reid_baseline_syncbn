@@ -84,8 +84,9 @@ def train(args):
 
     trainer = BaseTrainer(cfg, model, train_dl, val_dl,
                           loss_func, num_query, num_gpus)
+    trainer.load_latest_if_possible()
 
-    for epoch in range(trainer.epochs):
+    for _ in range(trainer.train_epoch, trainer.epochs):
         for batch in tqdm(trainer.train_dl):
             trainer.step(batch)
             trainer.handle_new_batch()

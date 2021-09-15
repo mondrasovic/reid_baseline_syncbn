@@ -1,3 +1,5 @@
+import pathlib
+
 import torch
 import torch.nn as nn
 from tqdm import tqdm
@@ -83,25 +85,6 @@ class BaseTrainer(object):
             self.logger.info('Trainer Built')
             return
 
-        # TODO: Multi-GPU model with FP16
-        raise NotImplementedError
-        self.model.to(self.device)
-        self.optim = make_optimizer(cfg, self.model, num_gpus)
-        self.scheduler = WarmupMultiStepLR(self.optim, cfg.SOLVER.STEPS, cfg.SOLVER.GAMMA,
-                                      cfg.SOLVER.WARMUP_FACTOR,
-                                      cfg.SOLVER.WARMUP_ITERS, cfg.SOLVER.WARMUP_METHOD)
-        self.scheduler.step()
-
-        self.model, self.optim = amp.initialize(self.model, self.optim,
-                                                opt_level='O1')
-        self.mix_precision = True
-        self.logger.info('Using fp16 training')
-
-        self.model = DDP(self.model, delay_allreduce=True)
-        self.logger.info('Convert model using apex')
-        self.logger.info('Trainer Built')
-
-
     def handle_new_batch(self):
         self.batch_cnt += 1
         if self.batch_cnt % self.cfg.SOLVER.LOG_PERIOD == 0:
@@ -185,6 +168,43 @@ class BaseTrainer(object):
                 self.cfg.MODEL.NAME + '_epoch' + str(self.train_epoch) + '.pth'))
         torch.save(self.optim.state_dict(), osp.join(self.output_dir,
                 self.cfg.MODEL.NAME + '_epoch'+ str(self.train_epoch) + '_optim.pth'))
+    
+    def load_latest_if_possible(self):
+        checkpoint = self._get_latest_checkpoint()
+        if checkpoint:
+            model_file_path, optim_file_path, epoch = checkpoint
+            self.logger.info(f"restoring latest checkpoint for epoch {epoch}")
+            
+            self.logger.info(f"loading model weights from {model_file_path}")
+            self.model.load_state_dict(torch.load(model_file_path))
+            
+            self.logger.info(f"loading optimizer weights from {optim_file_path}")
+            self.optim.load_state_dict(torch.load(optim_file_path))
 
+            self.train_epoch = epoch + 1
 
+    def _get_latest_checkpoint(self):
+        output_dir = pathlib.Path(self.output_dir)
+        if not output_dir.exists():
+            return None
+        
+        max_epoch = 0
+        model_file_path = optim_file_path = None
 
+        for file in output_dir.glob("*_epoch*.pth"):
+            file_name = file.stem
+            if "optim" in file_name:
+                continue
+
+            start = file_name.index("epoch") + len("epoch")
+            epoch = int(file_name[start:])
+
+            if epoch > max_epoch:
+                max_epoch = epoch
+                model_file_path = str(file)
+                optim_file_path = str(file.parent / f"{file.stem}_optim.pth")
+        
+        if max_epoch == 0:
+            return None
+        
+        return model_file_path, optim_file_path, max_epoch
