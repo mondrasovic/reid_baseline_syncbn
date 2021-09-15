@@ -66,3 +66,4 @@ TEST:
 2021-09-15 12:48:17,993 reid_baseline.train INFO: Epoch[2] Iteration[300/4617] Loss: 6.157,Acc: 0.012, Base Lr: 1.09e-05
 2021-09-15 12:49:13,378 reid_baseline.train INFO: Epoch[2] Iteration[400/4617] Loss: 6.148,Acc: 0.010, Base Lr: 1.09e-05
 2021-09-15 12:50:07,923 reid_baseline.train INFO: Epoch[2] Iteration[500/4617] Loss: 6.153,Acc: 0.010, Base Lr: 1.09e-05
+2021-09-15 12:51:02,248 reid_baseline.train INFO: Epoch[2] Iteration[600/4617] Loss: 6.156,Acc: 0.010, Base Lr: 1.09e-05
