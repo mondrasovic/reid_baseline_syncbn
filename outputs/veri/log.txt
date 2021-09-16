@@ -1,8 +1,8 @@
-2021-09-15 12:45:07,372 reid_baseline INFO: Using 1 GPUS
-2021-09-15 12:45:07,373 reid_baseline INFO: Namespace(config_file='configs/veri_custom.yml', local_rank=0, opts=[], test=False)
-2021-09-15 12:45:07,373 reid_baseline INFO: Running with config:
+2021-09-16 07:28:52,541 reid_baseline INFO: Using 1 GPUS
+2021-09-16 07:28:52,541 reid_baseline INFO: Namespace(config_file='configs/veri_custom.yml', local_rank=0, opts=[], test=False)
+2021-09-16 07:28:52,541 reid_baseline INFO: Running with config:
 DATALOADER:
-  NUM_INSTANCE: 4
+  NUM_INSTANCE: 8
   NUM_WORKERS: 4
   SAMPLER: softmax_triplet
 DATASETS:
@@ -17,8 +17,8 @@ INPUT:
   PIXEL_STD: [0.5, 0.5, 0.5]
   PROB: 0.5
   RE_PROB: 0.5
-  SIZE_TEST: [384, 384]
-  SIZE_TRAIN: [384, 384]
+  SIZE_TEST: [224, 224]
+  SIZE_TRAIN: [224, 224]
 MODEL:
   DEVICE: cuda
   LABEL_SMOOTH: False
@@ -34,13 +34,13 @@ SOLVER:
   EVAL_PERIOD: 2
   FP16: True
   GAMMA: 0.6
-  IMS_PER_BATCH: 8
+  IMS_PER_BATCH: 16
   LOG_PERIOD: 100
   MARGIN: 0.3
   MAX_EPOCHS: 50
   MOMENTUM: 0.9
   OPTIMIZER_NAME: Adam
-  STEPS: (10, 20, 30, 40, 50)
+  STEPS: (5, 10, 15, 20, 30, 40, 50)
   WARMUP_FACTOR: 0.01
   WARMUP_ITERS: 10
   WARMUP_METHOD: linear
@@ -49,21 +49,13 @@ SOLVER:
 TEST:
   CMC: [1, 5, 10]
   DEBUG: True
-  IMS_PER_BATCH: 8
+  IMS_PER_BATCH: 16
   MULTI_GPU: False
   RERANK: True
   VIS: False
   VIS_G_NUM: 5
   VIS_Q_NUM: 10
-  WEIGHT: path
-2021-09-15 12:45:12,342 reid_baseline.train INFO: Using fp16 training
-2021-09-15 12:45:12,343 reid_baseline.train INFO: Trainer Built
-2021-09-15 12:45:12,345 reid_baseline.train INFO: restoring latest checkpoint for epoch 2
-2021-09-15 12:45:12,345 reid_baseline.train INFO: loading model weights from outputs\veri\resnet50_epoch2.pth
-2021-09-15 12:45:12,503 reid_baseline.train INFO: loading optimizer weights from outputs\veri\resnet50_epoch2_optim.pth
-2021-09-15 12:46:26,131 reid_baseline.train INFO: Epoch[2] Iteration[100/4617] Loss: 6.162,Acc: 0.005, Base Lr: 1.09e-05
-2021-09-15 12:47:22,389 reid_baseline.train INFO: Epoch[2] Iteration[200/4617] Loss: 6.145,Acc: 0.013, Base Lr: 1.09e-05
-2021-09-15 12:48:17,993 reid_baseline.train INFO: Epoch[2] Iteration[300/4617] Loss: 6.157,Acc: 0.012, Base Lr: 1.09e-05
-2021-09-15 12:49:13,378 reid_baseline.train INFO: Epoch[2] Iteration[400/4617] Loss: 6.148,Acc: 0.010, Base Lr: 1.09e-05
-2021-09-15 12:50:07,923 reid_baseline.train INFO: Epoch[2] Iteration[500/4617] Loss: 6.153,Acc: 0.010, Base Lr: 1.09e-05
-2021-09-15 12:51:02,248 reid_baseline.train INFO: Epoch[2] Iteration[600/4617] Loss: 6.156,Acc: 0.010, Base Lr: 1.09e-05
+  WEIGHT: ./outputs/veri/resnet50_epoch5.pth
+2021-09-16 07:28:55,985 reid_baseline.train INFO: Using fp16 training
+2021-09-16 07:28:55,985 reid_baseline.train INFO: Trainer Built
+2021-09-16 07:29:59,898 reid_baseline.train INFO: Epoch[1] Iteration[100/2240] Loss: 8.161,Acc: 0.001, Base Lr: 1.09e-05

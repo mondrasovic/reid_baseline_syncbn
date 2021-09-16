@@ -2,8 +2,8 @@ MODEL:
   PRETRAIN_PATH: './resnet50-19c8e357.pth'
   
 INPUT:
-  SIZE_TRAIN: [384, 384]
-  SIZE_TEST: [384, 384]
+  SIZE_TRAIN: [224, 224]
+  SIZE_TEST: [224, 224]
   PIXEL_MEAN: [0.5, 0.5, 0.5]
   PIXEL_STD: [0.5, 0.5, 0.5]
   PROB: 0.5 # random horizontal flip
@@ -19,7 +19,7 @@ DATASETS:
 
 DATALOADER:
   SAMPLER: 'softmax_triplet'
-  NUM_INSTANCE: 4
+  NUM_INSTANCE: 8
   NUM_WORKERS: 4
 
 SOLVER:
@@ -29,10 +29,10 @@ SOLVER:
   BIAS_LR_FACTOR: 1
   WEIGHT_DECAY: 0.0005
   WEIGHT_DECAY_BIAS: 0.0005
-  IMS_PER_BATCH: 8
+  IMS_PER_BATCH: 16
   FP16: True
 
-  STEPS: [10, 20, 30, 40, 50]
+  STEPS: [5, 10, 15, 20, 30, 40, 50]
   GAMMA: 0.6
 
   WARMUP_FACTOR: 0.01
@@ -44,7 +44,7 @@ SOLVER:
   EVAL_PERIOD: 2
 
 TEST:
-  IMS_PER_BATCH: 8
+  IMS_PER_BATCH: 16
   DEBUG: True
   WEIGHT: "./outputs/veri/resnet50_epoch5.pth"
 
