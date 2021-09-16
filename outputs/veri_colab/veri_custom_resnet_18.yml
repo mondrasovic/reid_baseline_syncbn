@@ -1,5 +1,6 @@
 MODEL:
-  PRETRAIN_PATH: './resnet50-19c8e357.pth'
+  NAME: 'resnet18'
+  PRETRAIN_PATH: './resnet18-5c106cde.pth'
   
 INPUT:
   SIZE_TRAIN: [224, 224]
@@ -12,14 +13,14 @@ INPUT:
 
 DATASETS:
   NAMES: 'veri'
-  DATA_PATH: '/content/VeRi_with_plate'
+  DATA_PATH: 'E:/datasets/VeRi/VeRi_with_plate'
   TRAIN_PATH: 'image_train'
   QUERY_PATH: 'image_query'
   GALLERY_PATH: 'image_test'
 
 DATALOADER:
   SAMPLER: 'softmax_triplet'
-  NUM_INSTANCE: 16
+  NUM_INSTANCE: 8
   NUM_WORKERS: 2
 
 SOLVER:
@@ -44,7 +45,7 @@ SOLVER:
   EVAL_PERIOD: 2
 
 TEST:
-  IMS_PER_BATCH: 64
+  IMS_PER_BATCH: 32
   DEBUG: True
   WEIGHT: "./outputs/veri_colab/resnet50_epochN.pth"
 

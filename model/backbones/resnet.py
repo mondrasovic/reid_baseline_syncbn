@@ -1,7 +1,6 @@
 import math
 import torch
 from torch import nn
-from torchvision import models
 
 
 class Bottleneck(nn.Module):
@@ -65,7 +64,6 @@ class ResNet(nn.Module):
                 nn.Conv2d(self.inplanes, planes * block.expansion,
                           kernel_size=1, stride=stride, bias=False),
                 nn.BatchNorm2d(planes * block.expansion),
-                # syncbn(planes * block.expansion),
             )
 
         layers = []
@@ -105,3 +103,11 @@ class ResNet(nn.Module):
             elif isinstance(m, nn.BatchNorm2d):
                 m.weight.data.fill_(1)
                 m.bias.data.zero_()
+
+
+def resnet50(last_stride=2):
+    return ResNet(last_stride, layers=[3, 4, 6, 3])
+
+
+def resnet18(last_stride=2):
+    return ResNet(last_stride, layers=[2, 2, 2, 2])

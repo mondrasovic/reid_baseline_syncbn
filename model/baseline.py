@@ -1,8 +1,6 @@
 import torch
 from torch import nn
 
-from .backbones.resnet import ResNet
-
 
 def weights_init_kaiming(m):
     classname = m.__class__.__name__
@@ -30,10 +28,9 @@ def weights_init_classifier(m):
 class Baseline(nn.Module):
     in_planes = 2048
 
-    def __init__(self, num_classes, last_stride, model_path):
+    def __init__(self, num_classes, base):
         super(Baseline, self).__init__()
-        self.base = ResNet(last_stride)
-        self.base.load_param(model_path)
+        self.base = base
         self.gap = nn.AdaptiveAvgPool2d(1)
         # self.gap = nn.AdaptiveMaxPool2d(1)
         self.num_classes = num_classes

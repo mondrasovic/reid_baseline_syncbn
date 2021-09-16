@@ -1,5 +1,6 @@
 MODEL:
-  PRETRAIN_PATH: './resnet50-19c8e357.pth'
+  NAME: 'resnet18'
+  PRETRAIN_PATH: './resnet18-5c106cde.pth'
   
 INPUT:
   SIZE_TRAIN: [224, 224]
