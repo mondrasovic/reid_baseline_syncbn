@@ -1,9 +1,9 @@
-2021-09-16 07:28:52,541 reid_baseline INFO: Using 1 GPUS
-2021-09-16 07:28:52,541 reid_baseline INFO: Namespace(config_file='configs/veri_custom.yml', local_rank=0, opts=[], test=False)
-2021-09-16 07:28:52,541 reid_baseline INFO: Running with config:
+2021-09-16 07:53:40,229 reid_baseline INFO: Using 1 GPUS
+2021-09-16 07:53:40,229 reid_baseline INFO: Namespace(config_file='configs/veri_custom_resnet_18.yml', local_rank=0, opts=[], test=False)
+2021-09-16 07:53:40,229 reid_baseline INFO: Running with config:
 DATALOADER:
   NUM_INSTANCE: 8
-  NUM_WORKERS: 4
+  NUM_WORKERS: 2
   SAMPLER: softmax_triplet
 DATASETS:
   DATA_PATH: E:/datasets/VeRi/VeRi_with_plate
@@ -23,9 +23,9 @@ MODEL:
   DEVICE: cuda
   LABEL_SMOOTH: False
   LAST_STRIDE: 1
-  NAME: resnet50
-  PRETRAIN_PATH: ./resnet50-19c8e357.pth
-OUTPUT_DIR: ./outputs/veri
+  NAME: resnet18
+  PRETRAIN_PATH: ./resnet18-5c106cde.pth
+OUTPUT_DIR: ./outputs/veri_colab
 SOLVER:
   BASE_LR: 0.0001
   BIAS_LR_FACTOR: 1
@@ -34,8 +34,8 @@ SOLVER:
   EVAL_PERIOD: 2
   FP16: True
   GAMMA: 0.6
-  IMS_PER_BATCH: 16
-  LOG_PERIOD: 100
+  IMS_PER_BATCH: 64
+  LOG_PERIOD: 10
   MARGIN: 0.3
   MAX_EPOCHS: 50
   MOMENTUM: 0.9
@@ -49,13 +49,12 @@ SOLVER:
 TEST:
   CMC: [1, 5, 10]
   DEBUG: True
-  IMS_PER_BATCH: 16
+  IMS_PER_BATCH: 32
   MULTI_GPU: False
   RERANK: True
   VIS: False
   VIS_G_NUM: 5
   VIS_Q_NUM: 10
-  WEIGHT: ./outputs/veri/resnet50_epoch5.pth
-2021-09-16 07:28:55,985 reid_baseline.train INFO: Using fp16 training
-2021-09-16 07:28:55,985 reid_baseline.train INFO: Trainer Built
-2021-09-16 07:29:59,898 reid_baseline.train INFO: Epoch[1] Iteration[100/2240] Loss: 8.161,Acc: 0.001, Base Lr: 1.09e-05
+  WEIGHT: ./outputs/veri_colab/resnet50_epochN.pth
+2021-09-16 07:53:42,705 reid_baseline.train INFO: Using fp16 training
+2021-09-16 07:53:42,705 reid_baseline.train INFO: Trainer Built

@@ -1,0 +1,52 @@
+MODEL:
+  NAME: 'resnet18'
+  PRETRAIN_PATH: './resnet18-5c106cde.pth'
+  
+INPUT:
+  SIZE_TRAIN: [224, 224]
+  SIZE_TEST: [224, 224]
+  PIXEL_MEAN: [0.5, 0.5, 0.5]
+  PIXEL_STD: [0.5, 0.5, 0.5]
+  PROB: 0.5 # random horizontal flip
+  RE_PROB: 0.5 # random erasing 
+  PADDING: 0
+
+DATASETS:
+  NAMES: 'veri'
+  DATA_PATH: '/content/VeRi_with_plate'
+  TRAIN_PATH: 'image_train'
+  QUERY_PATH: 'image_query'
+  GALLERY_PATH: 'image_test'
+
+DATALOADER:
+  SAMPLER: 'softmax_triplet'
+  NUM_INSTANCE: 16
+  NUM_WORKERS: 2
+
+SOLVER:
+  OPTIMIZER_NAME: 'Adam'
+  MAX_EPOCHS: 50
+  BASE_LR: 0.0001
+  BIAS_LR_FACTOR: 1
+  WEIGHT_DECAY: 0.0005
+  WEIGHT_DECAY_BIAS: 0.0005
+  IMS_PER_BATCH: 64
+  FP16: True
+
+  STEPS: [5, 10, 15, 20, 30, 40, 50]
+  GAMMA: 0.6
+
+  WARMUP_FACTOR: 0.01
+  WARMUP_ITERS: 10
+  WARMUP_METHOD: 'linear'
+
+  CHECKPOINT_PERIOD: 2
+  LOG_PERIOD: 10  # Number of batches between logs.
+  EVAL_PERIOD: 2
+
+TEST:
+  IMS_PER_BATCH: 64
+  DEBUG: True
+  WEIGHT: "./outputs/veri_colab/resnet50_epochN.pth"
+
+OUTPUT_DIR: "./outputs/veri_colab"
