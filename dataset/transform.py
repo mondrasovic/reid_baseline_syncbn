@@ -2,6 +2,7 @@ import math
 import random
 import torchvision.transforms as T
 
+
 class RandomErasing(object):
     """ Randomly selects a rectangle region in an image and erases its pixels.
         'Random Erasing Data Augmentation' by Zhong et al.
@@ -13,8 +14,14 @@ class RandomErasing(object):
          r1: Minimum aspect ratio of erased area.
          mean: Erasing value.
     """
-
-    def __init__(self, probability=0.5, sl=0.02, sh=0.4, r1=0.3, mean=(0.4914, 0.4822, 0.4465)):
+    def __init__(
+        self,
+        probability=0.5,
+        sl=0.02,
+        sh=0.4,
+        r1=0.3,
+        mean=(0.4914, 0.4822, 0.4465)
+    ):
         self.probability = probability
         self.mean = mean
         self.sl = sl
@@ -47,6 +54,3 @@ class RandomErasing(object):
                 return img
 
         return img
-
-
-

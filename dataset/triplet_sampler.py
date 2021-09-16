@@ -17,7 +17,6 @@ class RandomIdentitySampler(Sampler):
     - num_instances (int): number of instances per identity in a batch.
     - batch_size (int): number of examples in a batch.
     """
-
     def __init__(self, data_source, batch_size, num_instances):
         self.data_source = data_source
         self.batch_size = batch_size
@@ -43,7 +42,9 @@ class RandomIdentitySampler(Sampler):
         for pid in self.pids:
             idxs = copy.deepcopy(self.index_dic[pid])
             if len(idxs) < self.num_instances:
-                idxs = np.random.choice(idxs, size=self.num_instances, replace=True)
+                idxs = np.random.choice(
+                    idxs, size=self.num_instances, replace=True
+                )
             random.shuffle(idxs)
             batch_idxs = []
             for idx in idxs:
@@ -68,4 +69,3 @@ class RandomIdentitySampler(Sampler):
 
     def __len__(self):
         return self.length
-

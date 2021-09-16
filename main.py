@@ -23,6 +23,7 @@ import os.path as osp
 
 # PyTorch as the main lib for neural network
 import torch
+
 torch.backends.cudnn.benchmark = True
 torch.multiprocessing.set_sharing_strategy('file_system')
 
@@ -38,14 +39,23 @@ torch.multiprocessing.set_sharing_strategy('file_system')
 
 def parse_args():
     parser = argparse.ArgumentParser(description="ReID training")
-    parser.add_argument('-c', '--config_file', type=str,
-                        help='the path to the training config')
-    parser.add_argument('-t', '--test', action='store_true',
-                        default=False, help='Model test')
+    parser.add_argument(
+        '-c',
+        '--config_file',
+        type=str,
+        help='the path to the training config'
+    )
+    parser.add_argument(
+        '-t', '--test', action='store_true', default=False, help='Model test'
+    )
     parser.add_argument('--local_rank', default=0, type=int)
-    parser.add_argument('opts', help='overwriting the training config'
-                        'from commandline', default=None,
-                        nargs=argparse.REMAINDER)
+    parser.add_argument(
+        'opts',
+        help='overwriting the training config'
+        'from commandline',
+        default=None,
+        nargs=argparse.REMAINDER
+    )
     args = parser.parse_args()
     return args
 
@@ -82,8 +92,9 @@ def train(args):
 
     loss_func = make_loss(cfg, num_classes)
 
-    trainer = BaseTrainer(cfg, model, train_dl, val_dl,
-                          loss_func, num_query, num_gpus)
+    trainer = BaseTrainer(
+        cfg, model, train_dl, val_dl, loss_func, num_query, num_gpus
+    )
     trainer.load_latest_if_possible()
 
     for _ in range(trainer.train_epoch, trainer.epochs):
@@ -117,8 +128,7 @@ def test(args):
 
     feats, pids, camids, paths = [], [], [], []
     with torch.no_grad():
-        for batch in tqdm(val_dl, total=len(val_dl),
-                          leave=False):
+        for batch in tqdm(val_dl, total=len(val_dl), leave=False):
             data, pid, camid, path = batch
             paths.extend(list(path))
             data = data.cuda()
@@ -142,9 +152,14 @@ def test(args):
 
     distmat = euclidean_dist(query_feat, gallery_feat)
 
-    cmc, mAP, all_AP = eval_func(distmat.numpy(), query_pid.numpy(), gallery_pid.numpy(),
-                                 query_camid.numpy(), gallery_camid.numpy(),
-                                 use_cython=True)
+    cmc, mAP, all_AP = eval_func(
+        distmat.numpy(),
+        query_pid.numpy(),
+        gallery_pid.numpy(),
+        query_camid.numpy(),
+        gallery_camid.numpy(),
+        use_cython=True
+    )
 
     if cfg.TEST.VIS:
         worst_q = np.argsort(all_AP)[:cfg.TEST.VIS_Q_NUM]
@@ -158,14 +173,19 @@ def test(args):
         for idx in range(cfg.TEST.VIS_Q_NUM):
             sid = qid[idx] == gid[idx]
             im = rank_list_to_im(
-                range(len(g_im[idx])), sid, q_im[idx], g_im[idx])
+                range(len(g_im[idx])), sid, q_im[idx], g_im[idx]
+            )
 
-            im.save(osp.join(cfg.OUTPUT_DIR,
-                    'worst_query_{}.jpg'.format(str(idx).zfill(2))))
+            im.save(
+                osp.join(
+                    cfg.OUTPUT_DIR,
+                    'worst_query_{}.jpg'.format(str(idx).zfill(2))
+                )
+            )
 
     logger.info('Validation Result:')
     for r in cfg.TEST.CMC:
-        logger.info('CMC Rank-{}: {:.2%}'.format(r, cmc[r-1]))
+        logger.info('CMC Rank-{}: {:.2%}'.format(r, cmc[r - 1]))
     logger.info('mAP: {:.2%}'.format(mAP))
     logger.info('-' * 20)
 
@@ -173,13 +193,18 @@ def test(args):
         return
 
     distmat = re_rank(query_feat, gallery_feat)
-    cmc, mAP, all_AP = eval_func(distmat, query_pid.numpy(), gallery_pid.numpy(),
-                                 query_camid.numpy(), gallery_camid.numpy(),
-                                 use_cython=True)
+    cmc, mAP, all_AP = eval_func(
+        distmat,
+        query_pid.numpy(),
+        gallery_pid.numpy(),
+        query_camid.numpy(),
+        gallery_camid.numpy(),
+        use_cython=True
+    )
 
     logger.info('ReRanking Result:')
     for r in cfg.TEST.CMC:
-        logger.info('CMC Rank-{}: {:.2%}'.format(r, cmc[r-1]))
+        logger.info('CMC Rank-{}: {:.2%}'.format(r, cmc[r - 1]))
     logger.info('mAP: {:.2%}'.format(mAP))
     logger.info('-' * 20)
 

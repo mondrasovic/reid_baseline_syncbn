@@ -37,7 +37,9 @@ class Baseline(nn.Module):
 
         self.bottleneck = nn.BatchNorm1d(self.in_planes)
         self.bottleneck.bias.requires_grad_(False)  # no shift
-        self.classifier = nn.Linear(self.in_planes, self.num_classes, bias=False)
+        self.classifier = nn.Linear(
+            self.in_planes, self.num_classes, bias=False
+        )
 
         self.bottleneck.apply(weights_init_kaiming)
         self.classifier.apply(weights_init_classifier)
@@ -52,12 +54,12 @@ class Baseline(nn.Module):
 
     def forward(self, x):
         global_feat = self.gap(self.base(x))  # (b, 2048, 1, 1)
-        global_feat = global_feat.view(global_feat.shape[0], -1)  # flatten to (bs, 2048)
+        global_feat = global_feat.view(
+            global_feat.shape[0], -1
+        )  # flatten to (bs, 2048)
         feat = self.bottleneck(global_feat)  # normalize for angular softmax
         if self.training:
             cls_score = self.classifier(feat)
             return cls_score, global_feat  # global feature for triplet loss
         else:
             return feat
-
-

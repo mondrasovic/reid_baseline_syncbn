@@ -6,7 +6,14 @@ import torch.nn.functional as F
 
 
 class ClusterLoss(nn.Module):
-    def __init__(self, margin=10, use_gpu=True, ordered=True, ids_per_batch=16, imgs_per_id=4):
+    def __init__(
+        self,
+        margin=10,
+        use_gpu=True,
+        ordered=True,
+        ids_per_batch=16,
+        imgs_per_id=4
+    ):
         super(ClusterLoss, self).__init__()
         self.use_gpu = use_gpu
         self.margin = margin
@@ -30,7 +37,14 @@ class ClusterLoss(nn.Module):
         dist = dist.clamp(min=1e-12).sqrt()  # for numerical stability
         return dist
 
-    def _cluster_loss(self, features, targets, ordered=True, ids_per_batch=16, imgs_per_id=4):
+    def _cluster_loss(
+        self,
+        features,
+        targets,
+        ordered=True,
+        ids_per_batch=16,
+        imgs_per_id=4
+    ):
         """
         Args:
             features: prediction matrix (before softmax) with shape (batch_size, feature_dim)
@@ -66,23 +80,29 @@ class ClusterLoss(nn.Module):
             inter_min_distance = inter_min_distance.cuda()
             intra_max_distance = intra_max_distance.cuda()
             center_features = center_features.cuda()
-        
+
         index = torch.range(0, unique_labels.size(0) - 1)
         for i in range(unique_labels.size(0)):
             label = unique_labels[i]
             same_class_features = features[targets == label]
             center_features[i] = same_class_features.mean(dim=0)
-            intra_class_distance = self._euclidean_dist(center_features[index==i], same_class_features)
+            intra_class_distance = self._euclidean_dist(
+                center_features[index == i], same_class_features
+            )
             # print('intra_class_distance', intra_class_distance)
             intra_max_distance[i] = intra_class_distance.max()
         # print('intra_max_distance:', intra_max_distance)
 
         for i in range(unique_labels.size(0)):
-            inter_class_distance = self._euclidean_dist(center_features[index==i], center_features[index != i])
+            inter_class_distance = self._euclidean_dist(
+                center_features[index == i], center_features[index != i]
+            )
             # print('inter_class_distance', inter_class_distance)
             inter_min_distance[i] = inter_class_distance.min()
         #  print('inter_min_distance:', inter_min_distance)
-        cluster_loss = torch.mean(torch.relu(intra_max_distance - inter_min_distance + self.margin))
+        cluster_loss = torch.mean(
+            torch.relu(intra_max_distance - inter_min_distance + self.margin)
+        )
         return cluster_loss, intra_max_distance, inter_min_distance
 
     def forward(self, features, targets):
@@ -96,13 +116,25 @@ class ClusterLoss(nn.Module):
         Return:
              cluster_loss
         """
-        assert features.size(0) == targets.size(0), "features.size(0) is not equal to targets.size(0)"
-        cluster_loss, cluster_dist_ap, cluster_dist_an = self._cluster_loss(features, targets, self.ordered, self.ids_per_batch, self.imgs_per_id)
+        assert features.size(0) == targets.size(
+            0
+        ), "features.size(0) is not equal to targets.size(0)"
+        cluster_loss, cluster_dist_ap, cluster_dist_an = self._cluster_loss(
+            features, targets, self.ordered, self.ids_per_batch,
+            self.imgs_per_id
+        )
         return cluster_loss, cluster_dist_ap, cluster_dist_an
 
 
 class ClusterLoss_local(nn.Module):
-    def __init__(self, margin=10, use_gpu=True, ordered=True, ids_per_batch=32, imgs_per_id=4):
+    def __init__(
+        self,
+        margin=10,
+        use_gpu=True,
+        ordered=True,
+        ids_per_batch=32,
+        imgs_per_id=4
+    ):
         super(ClusterLoss_local, self).__init__()
         self.use_gpu = use_gpu
         self.margin = margin
@@ -151,7 +183,8 @@ class ClusterLoss_local(nn.Module):
                 elif (i > 0) and (j == 0):
                     dist[i][j] = dist[i - 1][j] + dist_mat[i, j]
                 else:
-                    dist[i][j] = torch.min(dist[i - 1][j], dist[i][j - 1]) + dist_mat[i, j]
+                    dist[i][j] = torch.min(dist[i - 1][j],
+                                           dist[i][j - 1]) + dist_mat[i, j]
         dist = dist[-1][-1]
         return dist
 
@@ -176,7 +209,14 @@ class ClusterLoss_local(nn.Module):
         dist_mat = self._shortest_dist(dist_mat)
         return dist_mat
 
-    def _cluster_loss(self, features, targets,ordered=True, ids_per_batch=32, imgs_per_id=4):
+    def _cluster_loss(
+        self,
+        features,
+        targets,
+        ordered=True,
+        ids_per_batch=32,
+        imgs_per_id=4
+    ):
         """
         Args:
             features: prediction matrix (before softmax) with shape (batch_size, H, feature_dim)
@@ -206,7 +246,9 @@ class ClusterLoss_local(nn.Module):
 
         inter_min_distance = torch.zeros(unique_labels.size(0))
         intra_max_distance = torch.zeros(unique_labels.size(0))
-        center_features = torch.zeros(unique_labels.size(0), features.size(1), features.size(2))
+        center_features = torch.zeros(
+            unique_labels.size(0), features.size(1), features.size(2)
+        )
 
         if self.use_gpu:
             inter_min_distance = inter_min_distance.cuda()
@@ -218,18 +260,24 @@ class ClusterLoss_local(nn.Module):
             label = unique_labels[i]
             same_class_features = features[targets == label]
             center_features[i] = same_class_features.mean(dim=0)
-            intra_class_distance = self._local_dist(center_features[index==i], same_class_features)
+            intra_class_distance = self._local_dist(
+                center_features[index == i], same_class_features
+            )
             # print('intra_class_distance', intra_class_distance)
             intra_max_distance[i] = intra_class_distance.max()
         # print('intra_max_distance:', intra_max_distance)
 
         for i in range(unique_labels.size(0)):
-            inter_class_distance = self._local_dist(center_features[index==i], center_features[index != i])
+            inter_class_distance = self._local_dist(
+                center_features[index == i], center_features[index != i]
+            )
             # print('inter_class_distance', inter_class_distance)
             inter_min_distance[i] = inter_class_distance.min()
         # print('inter_min_distance:', inter_min_distance)
 
-        cluster_loss = torch.mean(torch.relu(intra_max_distance - inter_min_distance + self.margin))
+        cluster_loss = torch.mean(
+            torch.relu(intra_max_distance - inter_min_distance + self.margin)
+        )
         return cluster_loss, intra_max_distance, inter_min_distance
 
     def forward(self, features, targets):
@@ -243,8 +291,13 @@ class ClusterLoss_local(nn.Module):
         Return:
              cluster_loss
         """
-        assert features.size(0) == targets.size(0), "features.size(0) is not equal to targets.size(0)"
-        cluster_loss, cluster_dist_ap, cluster_dist_an = self._cluster_loss(features, targets, self.ordered, self.ids_per_batch, self.imgs_per_id)
+        assert features.size(0) == targets.size(
+            0
+        ), "features.size(0) is not equal to targets.size(0)"
+        cluster_loss, cluster_dist_ap, cluster_dist_an = self._cluster_loss(
+            features, targets, self.ordered, self.ids_per_batch,
+            self.imgs_per_id
+        )
         return cluster_loss, cluster_dist_ap, cluster_dist_an
 
 
@@ -255,15 +308,21 @@ if __name__ == '__main__':
     targets = torch.Tensor([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3])
     if use_gpu:
         features = torch.rand(16, 2048).cuda()
-        targets = torch.Tensor([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]).cuda()
+        targets = torch.Tensor(
+            [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]
+        ).cuda()
     loss = cluster_loss(features, targets)
     print(loss)
 
-    cluster_loss_local = ClusterLoss_local(use_gpu=use_gpu, ids_per_batch=4, imgs_per_id=4)
+    cluster_loss_local = ClusterLoss_local(
+        use_gpu=use_gpu, ids_per_batch=4, imgs_per_id=4
+    )
     features = torch.rand(16, 8, 2048)
     targets = torch.Tensor([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3])
     if use_gpu:
         features = torch.rand(16, 8, 2048).cuda()
-        targets = torch.Tensor([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]).cuda()
+        targets = torch.Tensor(
+            [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]
+        ).cuda()
     loss = cluster_loss_local(features, targets)
     print(loss)

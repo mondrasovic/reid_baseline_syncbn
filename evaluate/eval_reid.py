@@ -4,16 +4,29 @@ import numpy as np
 from .eval_cylib.eval_metrics_cy import evaluate_cy
 
 
-def eval_func(distmat, q_pids, g_pids, q_camids, g_camids, max_rank=50, use_cython=False):
+def eval_func(
+    distmat,
+    q_pids,
+    g_pids,
+    q_camids,
+    g_camids,
+    max_rank=50,
+    use_cython=False
+):
     """Evaluation with market1501 metric
         Key: for each query identity, its gallery images from the same camera view are discarded.
         """
     if use_cython:
-        return evaluate_cy(distmat, q_pids, g_pids, q_camids, g_camids, max_rank)
+        return evaluate_cy(
+            distmat, q_pids, g_pids, q_camids, g_camids, max_rank
+        )
     num_q, num_g = distmat.shape
     if num_g < max_rank:
         max_rank = num_g
-        print("Note: number of gallery samples is quite small, got {}".format(num_g))
+        print(
+            "Note: number of gallery samples is quite small, got {}".
+            format(num_g)
+        )
     indices = np.argsort(distmat, axis=1)
     matches = (g_pids[indices] == q_pids[:, np.newaxis]).astype(np.int32)
 

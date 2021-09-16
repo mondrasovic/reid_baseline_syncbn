@@ -19,7 +19,8 @@ def parse_args():
         " given images."
     )
     parser.add_argument(
-        "-c", "--config_file",
+        "-c",
+        "--config_file",
         type=str,
         help="path to the inference configuration file"
     )
@@ -49,7 +50,7 @@ def main():
     model.eval()
 
     transform = get_trm(cfg, is_train=False)
-    
+
     img_1 = Image.open(args.img_1_path)
     img_2 = Image.open(args.img_2_path)
 
