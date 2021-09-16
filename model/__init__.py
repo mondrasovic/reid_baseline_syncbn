@@ -9,7 +9,7 @@ def build_model(cfg, num_classes):
         base_builder = resnet50
     elif cfg.MODEL.NAME == 'resnet18':
         base_builder = resnet18
-    
+
     base = base_builder(cfg.MODEL.LAST_STRIDE)
     base.load_param(cfg.MODEL.PRETRAIN_PATH)
 

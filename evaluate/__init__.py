@@ -19,6 +19,7 @@ def euclidean_dist(x, y):
     dist = dist.clamp(min=1e-12).sqrt()  # for numerical stability
     return dist
 
+
 def re_rank(q, g):
     qq_dist = euclidean_dist(q, q).numpy()
     gg_dist = euclidean_dist(g, g).numpy()

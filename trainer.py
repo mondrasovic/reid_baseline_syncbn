@@ -4,13 +4,13 @@ import torch
 import torch.nn as nn
 from tqdm import tqdm
 import numpy as np
-import logging 
+import logging
 from evaluate import eval_func, re_rank
 from evaluate import euclidean_dist
 from utils import AvgerageMeter
 import os.path as osp
 import os
-from model import convert_model 
+from model import convert_model
 from optim import make_optimizer, WarmupMultiStepLR
 
 try:
@@ -22,8 +22,9 @@ except:
 
 
 class BaseTrainer(object):
-    def __init__(self, cfg, model, train_dl, val_dl, 
-                 loss_func, num_query, num_gpus):
+    def __init__(
+        self, cfg, model, train_dl, val_dl, loss_func, num_query, num_gpus
+    ):
         self.cfg = cfg
         self.model = model
         self.train_dl = train_dl
@@ -46,11 +47,16 @@ class BaseTrainer(object):
 
         if num_gpus > 1:
             # convert to use sync_bn
-            self.logger.info('More than one gpu used, convert model to use SyncBN.')
+            self.logger.info(
+                'More than one gpu used, convert model to use SyncBN.'
+            )
             if cfg.SOLVER.FP16:
-                self.logger.info('Using apex to perform SyncBN and FP16 training')
-                torch.distributed.init_process_group(backend='nccl', 
-                                                     init_method='env://')
+                self.logger.info(
+                    'Using apex to perform SyncBN and FP16 training'
+                )
+                torch.distributed.init_process_group(
+                    backend='nccl', init_method='env://'
+                )
                 self.model = apex.parallel.convert_syncbn_model(self.model)
             else:
                 # Multi-GPU model without FP16
@@ -60,9 +66,11 @@ class BaseTrainer(object):
                 self.logger.info('Using pytorch SyncBN implementation')
 
                 self.optim = make_optimizer(cfg, self.model, num_gpus)
-                self.scheduler = WarmupMultiStepLR(self.optim, cfg.SOLVER.STEPS, cfg.SOLVER.GAMMA,
-                                              cfg.SOLVER.WARMUP_FACTOR,
-                                              cfg.SOLVER.WARMUP_ITERS, cfg.SOLVER.WARMUP_METHOD)
+                self.scheduler = WarmupMultiStepLR(
+                    self.optim, cfg.SOLVER.STEPS, cfg.SOLVER.GAMMA,
+                    cfg.SOLVER.WARMUP_FACTOR, cfg.SOLVER.WARMUP_ITERS,
+                    cfg.SOLVER.WARMUP_METHOD
+                )
                 self.scheduler.step()
                 self.mix_precision = False
                 self.logger.info('Trainer Built')
@@ -71,15 +79,18 @@ class BaseTrainer(object):
             # Single GPU model
             self.model.cuda()
             self.optim = make_optimizer(cfg, self.model, num_gpus)
-            self.scheduler = WarmupMultiStepLR(self.optim, cfg.SOLVER.STEPS, cfg.SOLVER.GAMMA,
-                                          cfg.SOLVER.WARMUP_FACTOR,
-                                          cfg.SOLVER.WARMUP_ITERS, cfg.SOLVER.WARMUP_METHOD)
+            self.scheduler = WarmupMultiStepLR(
+                self.optim, cfg.SOLVER.STEPS, cfg.SOLVER.GAMMA,
+                cfg.SOLVER.WARMUP_FACTOR, cfg.SOLVER.WARMUP_ITERS,
+                cfg.SOLVER.WARMUP_METHOD
+            )
             self.scheduler.step()
             self.mix_precision = False
             if cfg.SOLVER.FP16:
                 # Single model using FP16
-                self.model, self.optim = amp.initialize(self.model, self.optim,
-                                                        opt_level='O1')
+                self.model, self.optim = amp.initialize(
+                    self.model, self.optim, opt_level='O1'
+                )
                 self.mix_precision = True
                 self.logger.info('Using fp16 training')
             self.logger.info('Trainer Built')
@@ -88,12 +99,14 @@ class BaseTrainer(object):
     def handle_new_batch(self):
         self.batch_cnt += 1
         if self.batch_cnt % self.cfg.SOLVER.LOG_PERIOD == 0:
-            self.logger.info('Epoch[{}] Iteration[{}/{}] Loss: {:.3f},'
-                            'Acc: {:.3f}, Base Lr: {:.2e}'
-                            .format(self.train_epoch, self.batch_cnt,
-                                    len(self.train_dl), self.loss_avg.avg,
-                                    self.acc_avg.avg, self.scheduler.get_lr()[0]))
-
+            self.logger.info(
+                'Epoch[{}] Iteration[{}/{}] Loss: {:.3f},'
+                'Acc: {:.3f}, Base Lr: {:.2e}'.format(
+                    self.train_epoch, self.batch_cnt, len(self.train_dl),
+                    self.loss_avg.avg, self.acc_avg.avg,
+                    self.scheduler.get_lr()[0]
+                )
+            )
 
     def handle_new_epoch(self):
         self.batch_cnt = 1
@@ -124,7 +137,7 @@ class BaseTrainer(object):
 
         self.loss_avg.update(loss.cpu().item())
         self.acc_avg.update(acc.cpu().item())
-        
+
         return self.loss_avg.avg, self.acc_avg.avg
 
     def evaluate(self):
@@ -132,8 +145,9 @@ class BaseTrainer(object):
         num_query = self.num_query
         feats, pids, camids = [], [], []
         with torch.no_grad():
-            for batch in tqdm(self.val_dl, total=len(self.val_dl),
-                             leave=False):
+            for batch in tqdm(
+                self.val_dl, total=len(self.val_dl), leave=False
+            ):
                 data, pid, camid, _ = batch
                 data = data.cuda()
                 feat = self.model(data).detach().cpu()
@@ -151,34 +165,51 @@ class BaseTrainer(object):
         gallery_feat = feats[num_query:]
         gallery_pid = pids[num_query:]
         gallery_camid = camids[num_query:]
-        
+
         distmat = euclidean_dist(query_feat, gallery_feat)
 
-        cmc, mAP, _ = eval_func(distmat.numpy(), query_pid.numpy(), gallery_pid.numpy(), 
-                             query_camid.numpy(), gallery_camid.numpy(),
-                             use_cython=self.cfg.SOLVER.CYTHON)
+        cmc, mAP, _ = eval_func(
+            distmat.numpy(),
+            query_pid.numpy(),
+            gallery_pid.numpy(),
+            query_camid.numpy(),
+            gallery_camid.numpy(),
+            use_cython=self.cfg.SOLVER.CYTHON
+        )
         self.logger.info('Validation Result:')
         for r in self.cfg.TEST.CMC:
-            self.logger.info('CMC Rank-{}: {:.2%}'.format(r, cmc[r-1]))
+            self.logger.info('CMC Rank-{}: {:.2%}'.format(r, cmc[r - 1]))
         self.logger.info('mAP: {:.2%}'.format(mAP))
         self.logger.info('-' * 20)
 
     def save(self):
-        torch.save(self.model.state_dict(), osp.join(self.output_dir,
-                self.cfg.MODEL.NAME + '_epoch' + str(self.train_epoch) + '.pth'))
-        torch.save(self.optim.state_dict(), osp.join(self.output_dir,
-                self.cfg.MODEL.NAME + '_epoch'+ str(self.train_epoch) + '_optim.pth'))
-    
+        torch.save(
+            self.model.state_dict(),
+            osp.join(
+                self.output_dir,
+                self.cfg.MODEL.NAME + '_epoch' + str(self.train_epoch) + '.pth'
+            )
+        )
+        torch.save(
+            self.optim.state_dict(),
+            osp.join(
+                self.output_dir, self.cfg.MODEL.NAME + '_epoch' +
+                str(self.train_epoch) + '_optim.pth'
+            )
+        )
+
     def load_latest_if_possible(self):
         checkpoint = self._get_latest_checkpoint()
         if checkpoint:
             model_file_path, optim_file_path, epoch = checkpoint
             self.logger.info(f"restoring latest checkpoint for epoch {epoch}")
-            
+
             self.logger.info(f"loading model weights from {model_file_path}")
             self.model.load_state_dict(torch.load(model_file_path))
-            
-            self.logger.info(f"loading optimizer weights from {optim_file_path}")
+
+            self.logger.info(
+                f"loading optimizer weights from {optim_file_path}"
+            )
             self.optim.load_state_dict(torch.load(optim_file_path))
 
             self.train_epoch = epoch + 1
@@ -187,7 +218,7 @@ class BaseTrainer(object):
         output_dir = pathlib.Path(self.output_dir)
         if not output_dir.exists():
             return None
-        
+
         max_epoch = 0
         model_file_path = optim_file_path = None
 
@@ -203,8 +234,8 @@ class BaseTrainer(object):
                 max_epoch = epoch
                 model_file_path = str(file)
                 optim_file_path = str(file.parent / f"{file.stem}_optim.pth")
-        
+
         if max_epoch == 0:
             return None
-        
+
         return model_file_path, optim_file_path, max_epoch

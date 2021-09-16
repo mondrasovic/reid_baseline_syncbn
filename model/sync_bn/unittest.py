@@ -20,10 +20,7 @@ class TorchTestCase(unittest.TestCase):
         else:
             rdiff = float((adiff / y).abs().max())
 
-        message = (
-            'Tensor close check failed\n'
-            'adiff={}\n'
-            'rdiff={}\n'
-        ).format(adiff, rdiff)
+        message = ('Tensor close check failed\n'
+                   'adiff={}\n'
+                   'rdiff={}\n').format(adiff, rdiff)
         self.assertTrue(torch.allclose(x, y), message)
-

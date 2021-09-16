@@ -10,7 +10,17 @@ class RangeLoss(nn.Module):
         intra_class_loss is the harmonic mean value of the top_k largest distances beturn intra_class_pairs
         inter_class_loss is the shortest distance between different class centers
     """
-    def __init__(self, k=2, margin=0.1, alpha=0.5, beta=0.5, use_gpu=True, ordered=True, ids_per_batch=32, imgs_per_id=4):
+    def __init__(
+        self,
+        k=2,
+        margin=0.1,
+        alpha=0.5,
+        beta=0.5,
+        use_gpu=True,
+        ordered=True,
+        ids_per_batch=32,
+        imgs_per_id=4
+    ):
         super(RangeLoss, self).__init__()
         self.use_gpu = use_gpu
         self.margin = margin
@@ -59,7 +69,9 @@ class RangeLoss(nn.Module):
         '''
         dist_array = self._pairwise_distance(features)
         dist_array = dist_array.view(1, -1)
-        top_k = dist_array.sort()[0][0, -self.k * 2::2]     # Because there are 2 same value of same feature pair in the dist_array
+        top_k = dist_array.sort()[0][
+            0, -self.k * 2::2
+        ]  # Because there are 2 same value of same feature pair in the dist_array
         # print('top k intra class dist:', top_k)
         return top_k
 
@@ -87,10 +99,14 @@ class RangeLoss(nn.Module):
         '''
         n = center_features.size(0)
         dist_array2 = self._pairwise_distance(center_features)
-        min_inter_class_dist2 = dist_array2.view(1, -1).sort()[0][0][n]  # exclude self compare, the first one is the min_inter_class_dist
+        min_inter_class_dist2 = dist_array2.view(1, -1).sort()[0][0][
+            n
+        ]  # exclude self compare, the first one is the min_inter_class_dist
         return min_inter_class_dist2
 
-    def _calculate_centers(self, features, targets, ordered, ids_per_batch, imgs_per_id):
+    def _calculate_centers(
+        self, features, targets, ordered, ids_per_batch, imgs_per_id
+    ):
         """
          Args:
             features: prediction matrix (before softmax) with shape (batch_size, feature_dim)
@@ -128,7 +144,9 @@ class RangeLoss(nn.Module):
             center_features[i] = same_class_features.mean(dim=0)
         return center_features
 
-    def _inter_class_loss(self, features, targets, ordered, ids_per_batch, imgs_per_id):
+    def _inter_class_loss(
+        self, features, targets, ordered, ids_per_batch, imgs_per_id
+    ):
         """
          Args:
             features: prediction matrix (before softmax) with shape (batch_size, feature_dim)
@@ -140,12 +158,18 @@ class RangeLoss(nn.Module):
          Return: 
             inter_class_loss
         """
-        center_features = self._calculate_centers(features, targets, ordered, ids_per_batch, imgs_per_id)
-        min_inter_class_center_distance = self._compute_min_dist(center_features)
+        center_features = self._calculate_centers(
+            features, targets, ordered, ids_per_batch, imgs_per_id
+        )
+        min_inter_class_center_distance = self._compute_min_dist(
+            center_features
+        )
         # print('min_inter_class_center_dist:', min_inter_class_center_distance)
         return torch.relu(self.margin - min_inter_class_center_distance)
 
-    def _intra_class_loss(self, features, targets, ordered, ids_per_batch, imgs_per_id):
+    def _intra_class_loss(
+        self, features, targets, ordered, ids_per_batch, imgs_per_id
+    ):
         """
          Args:
             features: prediction matrix (before softmax) with shape (batch_size, feature_dim)
@@ -179,12 +203,16 @@ class RangeLoss(nn.Module):
 
         for i in range(unique_labels.size(0)):
             label = unique_labels[i]
-            same_class_distances = 1.0 / self._compute_top_k(features[targets == label])
+            same_class_distances = 1.0 / self._compute_top_k(
+                features[targets == label]
+            )
             intra_distance[i] = self.k / torch.sum(same_class_distances)
         # print('intra_distace:', intra_distance)
         return torch.sum(intra_distance)
 
-    def _range_loss(self, features, targets, ordered, ids_per_batch, imgs_per_id):
+    def _range_loss(
+        self, features, targets, ordered, ids_per_batch, imgs_per_id
+    ):
         """
         Args:
             features: prediction matrix (before softmax) with shape (batch_size, feature_dim)
@@ -195,8 +223,12 @@ class RangeLoss(nn.Module):
         Return:
              range_loss
         """
-        inter_class_loss = self._inter_class_loss(features, targets, ordered, ids_per_batch, imgs_per_id)
-        intra_class_loss = self._intra_class_loss(features, targets, ordered, ids_per_batch, imgs_per_id)
+        inter_class_loss = self._inter_class_loss(
+            features, targets, ordered, ids_per_batch, imgs_per_id
+        )
+        intra_class_loss = self._intra_class_loss(
+            features, targets, ordered, ids_per_batch, imgs_per_id
+        )
         range_loss = self.alpha * intra_class_loss + self.beta * inter_class_loss
         return range_loss, intra_class_loss, inter_class_loss
 
@@ -211,12 +243,17 @@ class RangeLoss(nn.Module):
         Return:
              range_loss
         """
-        assert features.size(0) == targets.size(0), "features.size(0) is not equal to targets.size(0)"
+        assert features.size(0) == targets.size(
+            0
+        ), "features.size(0) is not equal to targets.size(0)"
         if self.use_gpu:
             features = features.cuda()
             targets = targets.cuda()
 
-        range_loss, intra_class_loss, inter_class_loss = self._range_loss(features, targets, self.ordered, self.ids_per_batch, self.imgs_per_id)
+        range_loss, intra_class_loss, inter_class_loss = self._range_loss(
+            features, targets, self.ordered, self.ids_per_batch,
+            self.imgs_per_id
+        )
         return range_loss, intra_class_loss, inter_class_loss
 
 
@@ -227,6 +264,8 @@ if __name__ == '__main__':
     targets = torch.Tensor([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3])
     if use_gpu:
         features = torch.rand(16, 2048).cuda()
-        targets = torch.Tensor([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]).cuda()
+        targets = torch.Tensor(
+            [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]
+        ).cuda()
     loss = range_loss(features, targets)
     print(loss)

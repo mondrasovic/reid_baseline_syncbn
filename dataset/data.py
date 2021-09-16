@@ -7,7 +7,9 @@ from torchvision import transforms as T
 import glob
 import re
 from PIL import ImageFile
+
 ImageFile.LOAD_TRUNCATED_IMAGES = True
+
 
 def read_image(img_path):
     """Keep reading image until succeed.
@@ -21,15 +23,16 @@ def read_image(img_path):
             img = Image.open(img_path).convert(img_type)
             got_img = True
         except IOError:
-            print("IOError incurred when reading '{}'. "
-                            "Will redo. Don't worry. Just chill.".format(img_path))
+            print(
+                "IOError incurred when reading '{}'. "
+                "Will redo. Don't worry. Just chill.".format(img_path)
+            )
             pass
     return img
 
 
 class ImageDataset(Dataset):
     """Image Person ReID Dataset"""
-
     def __init__(self, dataset, cfg, transform=None):
         self.dataset = dataset
         self.cfg = cfg
@@ -49,9 +52,15 @@ class ImageDataset(Dataset):
 
 
 class BaseDataset:
-    def __init__(self, root='/home/zbc/data/reid',
-                    train_dir='', query_dir='', gallery_dir='',
-                    verbose=True, **kwargs):
+    def __init__(
+        self,
+        root='/home/zbc/data/reid',
+        train_dir='',
+        query_dir='',
+        gallery_dir='',
+        verbose=True,
+        **kwargs
+    ):
         self.dataset_dir = root
         self.train_dir = osp.join(self.dataset_dir, train_dir)
         self.query_dir = osp.join(self.dataset_dir, query_dir)
@@ -71,9 +80,15 @@ class BaseDataset:
         self.query = query
         self.gallery = gallery
 
-        self.num_train_pids, self.num_train_imgs, self.num_train_cams = self.get_imagedata_info(self.train)
-        self.num_query_pids, self.num_query_imgs, self.num_query_cams = self.get_imagedata_info(self.query)
-        self.num_gallery_pids, self.num_gallery_imgs, self.num_gallery_cams = self.get_imagedata_info(self.gallery)
+        self.num_train_pids, self.num_train_imgs, self.num_train_cams = self.get_imagedata_info(
+            self.train
+        )
+        self.num_query_pids, self.num_query_imgs, self.num_query_cams = self.get_imagedata_info(
+            self.query
+        )
+        self.num_gallery_pids, self.num_gallery_imgs, self.num_gallery_cams = self.get_imagedata_info(
+            self.gallery
+        )
 
     def get_imagedata_info(self, data):
         pids, cams = [], []
@@ -88,29 +103,51 @@ class BaseDataset:
         return num_pids, num_imgs, num_cams
 
     def print_dataset_statistics(self, train, query, gallery):
-        num_train_pids, num_train_imgs, num_train_cams = self.get_imagedata_info(train)
-        num_query_pids, num_query_imgs, num_query_cams = self.get_imagedata_info(query)
-        num_gallery_pids, num_gallery_imgs, num_gallery_cams = self.get_imagedata_info(gallery)
+        num_train_pids, num_train_imgs, num_train_cams = self.get_imagedata_info(
+            train
+        )
+        num_query_pids, num_query_imgs, num_query_cams = self.get_imagedata_info(
+            query
+        )
+        num_gallery_pids, num_gallery_imgs, num_gallery_cams = self.get_imagedata_info(
+            gallery
+        )
 
         print("Dataset statistics:")
         print("  ----------------------------------------")
         print("  subset   | # ids | # images | # cameras")
         print("  ----------------------------------------")
-        print("  train    | {:5d} | {:8d} | {:9d}".format(num_train_pids, num_train_imgs, num_train_cams))
-        print("  query    | {:5d} | {:8d} | {:9d}".format(num_query_pids, num_query_imgs, num_query_cams))
-        print("  gallery  | {:5d} | {:8d} | {:9d}".format(num_gallery_pids, num_gallery_imgs, num_gallery_cams))
+        print(
+            "  train    | {:5d} | {:8d} | {:9d}".format(
+                num_train_pids, num_train_imgs, num_train_cams
+            )
+        )
+        print(
+            "  query    | {:5d} | {:8d} | {:9d}".format(
+                num_query_pids, num_query_imgs, num_query_cams
+            )
+        )
+        print(
+            "  gallery  | {:5d} | {:8d} | {:9d}".format(
+                num_gallery_pids, num_gallery_imgs, num_gallery_cams
+            )
+        )
         print("  ----------------------------------------")
 
     def _check_before_run(self):
         """Check if all files are available before going deeper"""
         if not osp.exists(self.dataset_dir):
-            raise RuntimeError("'{}' is not available".format(self.dataset_dir))
+            raise RuntimeError(
+                "'{}' is not available".format(self.dataset_dir)
+            )
         if not osp.exists(self.train_dir):
             raise RuntimeError("'{}' is not available".format(self.train_dir))
         if not osp.exists(self.query_dir):
             raise RuntimeError("'{}' is not available".format(self.query_dir))
         if not osp.exists(self.gallery_dir):
-            raise RuntimeError("'{}' is not available".format(self.gallery_dir))
+            raise RuntimeError(
+                "'{}' is not available".format(self.gallery_dir)
+            )
 
     def _process_dir(self, dir_path, relabel=False):
         img_paths = glob.glob(osp.join(dir_path, '*.jpg'))
@@ -134,7 +171,6 @@ class BaseDataset:
         return dataset
 
 
-
 def init_dataset(cfg):
     """
         Use path in cfg to init a dataset
@@ -149,6 +185,9 @@ def init_dataset(cfg):
             cfg.DATASETS.QUERY_PATH: all the query images
             cfg.DATASETS.GALLERY_PATH: all the gallery images
     """
-    return BaseDataset(root=cfg.DATASETS.DATA_PATH, train_dir=cfg.DATASETS.TRAIN_PATH,
-                    query_dir=cfg.DATASETS.QUERY_PATH, gallery_dir=cfg.DATASETS.GALLERY_PATH)
-
+    return BaseDataset(
+        root=cfg.DATASETS.DATA_PATH,
+        train_dir=cfg.DATASETS.TRAIN_PATH,
+        query_dir=cfg.DATASETS.QUERY_PATH,
+        gallery_dir=cfg.DATASETS.GALLERY_PATH
+    )

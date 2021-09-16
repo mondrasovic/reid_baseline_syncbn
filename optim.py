@@ -1,6 +1,7 @@
 from bisect import bisect_right
 import torch
 
+
 class WarmupMultiStepLR(torch.optim.lr_scheduler._LRScheduler):
     def __init__(
         self,
@@ -14,7 +15,8 @@ class WarmupMultiStepLR(torch.optim.lr_scheduler._LRScheduler):
     ):
         if not list(milestones) == sorted(milestones):
             raise ValueError(
-                "Milestones should be a list of" " increasing integers. Got {}",
+                "Milestones should be a list of"
+                " increasing integers. Got {}",
                 milestones,
             )
 
@@ -39,11 +41,11 @@ class WarmupMultiStepLR(torch.optim.lr_scheduler._LRScheduler):
                 alpha = self.last_epoch / self.warmup_iters
                 warmup_factor = self.warmup_factor * (1 - alpha) + alpha
         return [
-            base_lr
-            * warmup_factor
-            * self.gamma ** bisect_right(self.milestones, self.last_epoch)
+            base_lr * warmup_factor *
+            self.gamma**bisect_right(self.milestones, self.last_epoch)
             for base_lr in self.base_lrs
         ]
+
 
 def make_optimizer(cfg, model, num_gpus=1):
     params = []
@@ -58,8 +60,8 @@ def make_optimizer(cfg, model, num_gpus=1):
             weight_decay = cfg.SOLVER.WEIGHT_DECAY_BIAS
         params += [{"params": [value], "lr": lr, "weight_decay": weight_decay}]
     if cfg.SOLVER.OPTIMIZER_NAME == 'SGD':
-        optimizer = getattr(torch.optim, cfg.SOLVER.OPTIMIZER_NAME)(params, momentum=cfg.SOLVER.MOMENTUM)
+        optimizer = getattr(torch.optim, cfg.SOLVER.OPTIMIZER_NAME
+                            )(params, momentum=cfg.SOLVER.MOMENTUM)
     else:
         optimizer = getattr(torch.optim, cfg.SOLVER.OPTIMIZER_NAME)(params)
     return optimizer
-
