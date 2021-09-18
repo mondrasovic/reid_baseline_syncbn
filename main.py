@@ -97,7 +97,7 @@ def train(args):
     )
     trainer.load_latest_if_possible()
 
-    for _ in range(trainer.train_epoch, trainer.epochs):
+    for _ in range(trainer.train_epoch, trainer.epochs + 1):
         for batch in tqdm(trainer.train_dl):
             trainer.step(batch)
             trainer.handle_new_batch()

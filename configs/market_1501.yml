@@ -12,7 +12,7 @@ INPUT:
 
 DATASETS:
   NAMES: 'market_1501'
-  DATA_PATH: 'E:/datasets/Market-1501_small'
+  DATA_PATH: 'E:/datasets/Market-1501_merge'
   TRAIN_PATH: 'bounding_box_train'
   QUERY_PATH: 'bounding_box_test'
   GALLERY_PATH: 'bounding_box_test'
@@ -24,7 +24,7 @@ DATALOADER:
 
 SOLVER:
   OPTIMIZER_NAME: 'Adam'
-  MAX_EPOCHS: 50
+  MAX_EPOCHS: 52
   BASE_LR: 0.0001
   BIAS_LR_FACTOR: 1
   WEIGHT_DECAY: 0.0005
@@ -39,9 +39,9 @@ SOLVER:
   WARMUP_ITERS: 10
   WARMUP_METHOD: 'linear'
 
-  CHECKPOINT_PERIOD: 1
+  CHECKPOINT_PERIOD: 4
   LOG_PERIOD: 10  # Number of batches between logs.
-  EVAL_PERIOD: 1
+  EVAL_PERIOD: 4
 
   CYTHON: True
 
