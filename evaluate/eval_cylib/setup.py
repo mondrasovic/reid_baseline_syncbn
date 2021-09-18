@@ -22,5 +22,5 @@ ext_modules = [
 
 setup(
     name='Cython-based reid evaluation code',
-    ext_modules=cythonize(ext_modules)
+    ext_modules=cythonize(ext_modules, language_level="3")
 )

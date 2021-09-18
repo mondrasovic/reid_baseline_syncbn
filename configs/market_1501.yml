@@ -43,11 +43,11 @@ SOLVER:
   LOG_PERIOD: 10  # Number of batches between logs.
   EVAL_PERIOD: 1
 
-  CYTHON: False
+  CYTHON: True
 
 TEST:
   IMS_PER_BATCH: 16
   DEBUG: True
-  WEIGHT: "./outputs/market1501/resnet50_epoch5.pth"
+  WEIGHT: "./outputs/market1501/resnet50_epoch45.pth"
 
 OUTPUT_DIR: "./outputs/market1501"

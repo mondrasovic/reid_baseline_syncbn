@@ -24,6 +24,12 @@ def parse_args():
         type=str,
         help="path to the inference configuration file"
     )
+    parser.add_argument(
+        "-n",
+        "--n-classes",
+        type=int,
+        help="Number of classes on which the model classifier was trained."
+    )
     parser.add_argument("img_1_path", help="first image file path"),
     parser.add_argument("img_2_path", help="second image file path"),
     parser.add_argument(
@@ -43,7 +49,7 @@ def main():
     cfg.merge_from_list(args.opts)
     cfg.freeze()
 
-    model = build_model(cfg, 575)
+    model = build_model(cfg, args.n_classes)
     param_dict = torch.load(cfg.TEST.WEIGHT)
     model.load_state_dict(param_dict)
     model.cuda()

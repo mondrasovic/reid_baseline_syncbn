@@ -1,6 +1,6 @@
-2021-09-17 15:44:04,401 reid_baseline INFO: Using 1 GPUS
-2021-09-17 15:44:04,401 reid_baseline INFO: Namespace(config_file='configs/market_1501.yml', local_rank=0, opts=[], test=False)
-2021-09-17 15:44:04,402 reid_baseline INFO: Running with config:
+2021-09-18 07:15:00,684 reid_baseline INFO: Using 1 GPUS
+2021-09-18 07:15:00,685 reid_baseline INFO: Namespace(config_file='configs/market_1501.yml', local_rank=0, opts=[], test=False)
+2021-09-18 07:15:00,685 reid_baseline INFO: Running with config:
 DATALOADER:
   NUM_INSTANCE: 8
   NUM_WORKERS: 4
@@ -8,7 +8,7 @@ DATALOADER:
 DATASETS:
   DATA_PATH: E:/datasets/Market-1501_small
   GALLERY_PATH: bounding_box_test
-  NAMES: veri
+  NAMES: market_1501
   QUERY_PATH: bounding_box_test
   TRAIN_PATH: bounding_box_train
 INPUT:
@@ -30,7 +30,7 @@ SOLVER:
   BASE_LR: 0.0001
   BIAS_LR_FACTOR: 1
   CHECKPOINT_PERIOD: 1
-  CYTHON: False
+  CYTHON: True
   EVAL_PERIOD: 1
   FP16: True
   GAMMA: 0.6
@@ -55,14 +55,11 @@ TEST:
   VIS: False
   VIS_G_NUM: 5
   VIS_Q_NUM: 10
-  WEIGHT: ./outputs/market1501/resnet50_epoch5.pth
-2021-09-17 15:44:08,776 reid_baseline.train INFO: Using fp16 training
-2021-09-17 15:44:08,776 reid_baseline.train INFO: Trainer Built
-2021-09-17 15:44:08,777 reid_baseline.train INFO: restoring latest checkpoint for epoch 1
-2021-09-17 15:44:08,777 reid_baseline.train INFO: loading model weights from outputs\market1501\resnet50_epoch1.pth
-2021-09-17 15:44:08,942 reid_baseline.train INFO: loading optimizer weights from outputs\market1501\resnet50_epoch1_optim.pth
-2021-09-17 15:44:21,538 reid_baseline.train INFO: Epoch[2] Iteration[10/36] Loss: 5.106,Acc: 0.081, Base Lr: 1.09e-05
-2021-09-17 15:44:25,128 reid_baseline.train INFO: Epoch[2] Iteration[20/36] Loss: 5.247,Acc: 0.066, Base Lr: 1.09e-05
-2021-09-17 15:44:29,121 reid_baseline.train INFO: Epoch[2] Iteration[30/36] Loss: 5.277,Acc: 0.069, Base Lr: 1.09e-05
-2021-09-17 15:44:31,766 reid_baseline.train INFO: Epoch 2 done
-2021-09-17 15:44:31,767 reid_baseline.train INFO: --------------------
+  WEIGHT: ./outputs/market1501/resnet50_epoch45.pth
+2021-09-18 07:15:04,741 reid_baseline.train INFO: Using fp16 training
+2021-09-18 07:15:04,742 reid_baseline.train INFO: Trainer Built
+2021-09-18 07:15:18,089 reid_baseline.train INFO: Epoch[1] Iteration[10/35] Loss: 5.842,Acc: 0.044, Base Lr: 1.09e-05
+2021-09-18 07:15:21,862 reid_baseline.train INFO: Epoch[1] Iteration[20/35] Loss: 5.782,Acc: 0.031, Base Lr: 1.09e-05
+2021-09-18 07:15:25,996 reid_baseline.train INFO: Epoch[1] Iteration[30/35] Loss: 5.798,Acc: 0.025, Base Lr: 1.09e-05
+2021-09-18 07:15:28,720 reid_baseline.train INFO: Epoch 1 done
+2021-09-18 07:15:28,721 reid_baseline.train INFO: --------------------
