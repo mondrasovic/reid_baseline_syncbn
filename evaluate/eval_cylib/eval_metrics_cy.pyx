@@ -18,7 +18,15 @@ https://cython.readthedocs.io/en/latest/src/userguide/numpy_tutorial.html
 """
 
 # Main interface
-cpdef evaluate_cy(distmat, q_pids, g_pids, q_camids, g_camids, max_rank, use_metric_cuhk03=False):
+cpdef evaluate_cy(
+    distmat,
+    q_pids,
+    g_pids,
+    q_camids,
+    g_camids,
+    max_rank,
+    use_metric_cuhk03=False
+):
     distmat = np.asarray(distmat, dtype=np.float32)
     q_pids = np.asarray(q_pids, dtype=np.int64)
     g_pids = np.asarray(g_pids, dtype=np.int64)
@@ -29,36 +37,41 @@ cpdef evaluate_cy(distmat, q_pids, g_pids, q_camids, g_camids, max_rank, use_met
     return eval_market1501_cy(distmat, q_pids, g_pids, q_camids, g_camids, max_rank)
 
 
-cpdef eval_cuhk03_cy(float[:,:] distmat, long[:] q_pids, long[:]g_pids,
-                     long[:]q_camids, long[:]g_camids, long max_rank):
-    
-    cdef long num_q = distmat.shape[0]
-    cdef long num_g = distmat.shape[1]
+cpdef eval_cuhk03_cy(
+    float[:,:] distmat,
+    long long[:] q_pids,
+    long long[:]g_pids,
+    long long[:]q_camids,
+    long long[:]g_camids,
+    long long max_rank
+):    
+    cdef long long num_q = distmat.shape[0]
+    cdef long long num_g = distmat.shape[1]
 
     if num_g < max_rank:
         max_rank = num_g
         print('Note: number of gallery samples is quite small, got {}'.format(num_g))
     
     cdef:
-        long num_repeats = 10
-        long[:,:] indices = np.argsort(distmat, axis=1)
-        long[:,:] matches = (np.asarray(g_pids)[np.asarray(indices)] == np.asarray(q_pids)[:, np.newaxis]).astype(np.int64)
+        long long num_repeats = 10
+        long long[:,:] indices = np.argsort(distmat, axis=1)
+        long long[:,:] matches = (np.asarray(g_pids)[np.asarray(indices)] == np.asarray(q_pids)[:, np.newaxis]).astype(np.int64)
 
         float[:,:] all_cmc = np.zeros((num_q, max_rank), dtype=np.float32)
         float[:] all_AP = np.zeros(num_q, dtype=np.float32)
         float num_valid_q = 0. # number of valid query
 
-        long q_idx, q_pid, q_camid, g_idx
-        long[:] order = np.zeros(num_g, dtype=np.int64)
-        long keep
+        long long q_idx, q_pid, q_camid, g_idx
+        long long[:] order = np.zeros(num_g, dtype=np.int64)
+        long long keep
 
         float[:] raw_cmc = np.zeros(num_g, dtype=np.float32) # binary vector, positions with value 1 are correct matches
         float[:] masked_raw_cmc = np.zeros(num_g, dtype=np.float32)
         float[:] cmc, masked_cmc
-        long num_g_real, num_g_real_masked, rank_idx, rnd_idx
-        unsigned long meet_condition
+        long long num_g_real, num_g_real_masked, rank_idx, rnd_idx
+        unsigned long long meet_condition
         float AP
-        long[:] kept_g_pids, mask
+        long long[:] kept_g_pids, mask
 
         float num_rel
         float[:] tmp_cmc = np.zeros(num_g, dtype=np.float32)
@@ -150,32 +163,37 @@ cpdef eval_cuhk03_cy(float[:,:] distmat, long[:] q_pids, long[:]g_pids,
     return np.asarray(avg_cmc).astype(np.float32), mAP, all_AP
 
 
-cpdef eval_market1501_cy(float[:,:] distmat, long[:] q_pids, long[:]g_pids,
-                         long[:]q_camids, long[:]g_camids, long max_rank):
-    
-    cdef long num_q = distmat.shape[0]
-    cdef long num_g = distmat.shape[1]
+cpdef eval_market1501_cy(
+    float[:,:] distmat,
+    long long[:] q_pids,
+    long long[:] g_pids,
+    long long[:]q_camids,
+    long long[:]g_camids,
+    long long max_rank
+):
+    cdef long long num_q = distmat.shape[0]
+    cdef long long num_g = distmat.shape[1]
 
     if num_g < max_rank:
         max_rank = num_g
         print('Note: number of gallery samples is quite small, got {}'.format(num_g))
     
     cdef:
-        long[:,:] indices = np.argsort(distmat, axis=1)
-        long[:,:] matches = (np.asarray(g_pids)[np.asarray(indices)] == np.asarray(q_pids)[:, np.newaxis]).astype(np.int64)
+        long long[:,:] indices = np.argsort(distmat, axis=1)
+        long long[:,:] matches = (np.asarray(g_pids)[np.asarray(indices)] == np.asarray(q_pids)[:, np.newaxis]).astype(np.int64)
 
         float[:,:] all_cmc = np.zeros((num_q, max_rank), dtype=np.float32)
         float[:] all_AP = np.zeros(num_q, dtype=np.float32)
         float num_valid_q = 0. # number of valid query
 
-        long q_idx, q_pid, q_camid, g_idx
-        long[:] order = np.zeros(num_g, dtype=np.int64)
-        long keep
+        long long q_idx, q_pid, q_camid, g_idx
+        long long[:] order = np.zeros(num_g, dtype=np.int64)
+        long long keep
 
         float[:] raw_cmc = np.zeros(num_g, dtype=np.float32) # binary vector, positions with value 1 are correct matches
         float[:] cmc = np.zeros(num_g, dtype=np.float32)
-        long num_g_real, rank_idx
-        unsigned long meet_condition
+        long long num_g_real, rank_idx
+        unsigned long long meet_condition
 
         float num_rel
         float[:] tmp_cmc = np.zeros(num_g, dtype=np.float32)
@@ -241,8 +259,12 @@ cpdef eval_market1501_cy(float[:,:] distmat, long[:] q_pids, long[:]g_pids,
 
 
 # Compute the cumulative sum
-cdef void function_cumsum(cython.numeric[:] src, cython.numeric[:] dst, long n):
-    cdef long i
+cdef void function_cumsum(
+    cython.numeric[:] src,
+    cython.numeric[:] dst,
+    long long n
+):
+    cdef long long i
     dst[0] = src[0]
     for i in range(1, n):
         dst[i] = src[i] + dst[i - 1]
