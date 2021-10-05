@@ -1,12 +1,12 @@
-2021-09-18 07:43:56,175 reid_baseline INFO: Using 1 GPUS
-2021-09-18 07:43:56,175 reid_baseline INFO: Namespace(config_file='configs/market_1501.yml', local_rank=0, opts=[], test=False)
-2021-09-18 07:43:56,176 reid_baseline INFO: Running with config:
+2021-09-20 07:29:18,396 reid_baseline INFO: Using 1 GPUS
+2021-09-20 07:29:18,397 reid_baseline INFO: Namespace(config_file='configs/market_1501.yml', local_rank=0, opts=[], test=False)
+2021-09-20 07:29:18,397 reid_baseline INFO: Running with config:
 DATALOADER:
   NUM_INSTANCE: 8
   NUM_WORKERS: 4
   SAMPLER: softmax_triplet
 DATASETS:
-  DATA_PATH: E:/datasets/Market-1501_small
+  DATA_PATH: E:/datasets/Market-1501_merge
   GALLERY_PATH: bounding_box_test
   NAMES: market_1501
   QUERY_PATH: bounding_box_test
@@ -29,18 +29,18 @@ OUTPUT_DIR: ./outputs/market1501
 SOLVER:
   BASE_LR: 0.0001
   BIAS_LR_FACTOR: 1
-  CHECKPOINT_PERIOD: 1
+  CHECKPOINT_PERIOD: 10
   CYTHON: True
-  EVAL_PERIOD: 1
+  EVAL_PERIOD: 10
   FP16: True
   GAMMA: 0.6
   IMS_PER_BATCH: 16
   LOG_PERIOD: 10
   MARGIN: 0.3
-  MAX_EPOCHS: 50
+  MAX_EPOCHS: 80
   MOMENTUM: 0.9
   OPTIMIZER_NAME: Adam
-  STEPS: (5, 10, 15, 20, 30, 40, 50)
+  STEPS: (5, 10, 15, 20, 30, 40, 50, 70)
   WARMUP_FACTOR: 0.01
   WARMUP_ITERS: 10
   WARMUP_METHOD: linear
@@ -55,20 +55,4 @@ TEST:
   VIS: False
   VIS_G_NUM: 5
   VIS_Q_NUM: 10
-  WEIGHT: ./outputs/market1501/resnet50_epoch45.pth
-2021-09-18 07:44:00,088 reid_baseline.train INFO: Using fp16 training
-2021-09-18 07:44:00,088 reid_baseline.train INFO: Trainer Built
-2021-09-18 07:44:00,089 reid_baseline.train INFO: restoring latest checkpoint for epoch 4
-2021-09-18 07:44:00,089 reid_baseline.train INFO: loading model weights from outputs\market1501\resnet50_epoch4.pth
-2021-09-18 07:44:00,247 reid_baseline.train INFO: loading optimizer weights from outputs\market1501\resnet50_epoch4_optim.pth
-2021-09-18 07:44:12,028 reid_baseline.train INFO: Epoch[5] Iteration[10/35] Loss: 4.656,Acc: 0.169, Base Lr: 1.09e-05
-2021-09-18 07:44:15,861 reid_baseline.train INFO: Epoch[5] Iteration[20/35] Loss: 4.605,Acc: 0.206, Base Lr: 1.09e-05
-2021-09-18 07:44:19,830 reid_baseline.train INFO: Epoch[5] Iteration[30/35] Loss: 4.548,Acc: 0.242, Base Lr: 1.09e-05
-2021-09-18 07:44:22,082 reid_baseline.train INFO: Epoch 5 done
-2021-09-18 07:44:22,082 reid_baseline.train INFO: --------------------
-2021-09-18 07:44:37,866 reid_baseline.train INFO: Validation Result:
-2021-09-18 07:44:37,866 reid_baseline.train INFO: CMC Rank-1: 39.86%
-2021-09-18 07:44:37,870 reid_baseline.train INFO: CMC Rank-5: 65.25%
-2021-09-18 07:44:37,870 reid_baseline.train INFO: CMC Rank-10: 76.60%
-2021-09-18 07:44:37,870 reid_baseline.train INFO: mAP: 22.09%
-2021-09-18 07:44:37,871 reid_baseline.train INFO: --------------------
+  WEIGHT: ./outputs/market1501/resnet50_epoch80.pth

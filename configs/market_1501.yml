@@ -24,7 +24,7 @@ DATALOADER:
 
 SOLVER:
   OPTIMIZER_NAME: 'Adam'
-  MAX_EPOCHS: 52
+  MAX_EPOCHS: 80
   BASE_LR: 0.0001
   BIAS_LR_FACTOR: 1
   WEIGHT_DECAY: 0.0005
@@ -32,22 +32,22 @@ SOLVER:
   IMS_PER_BATCH: 16
   FP16: True
 
-  STEPS: [5, 10, 15, 20, 30, 40, 50]
+  STEPS: [5, 10, 15, 20, 30, 40, 50, 70]
   GAMMA: 0.6
 
   WARMUP_FACTOR: 0.01
   WARMUP_ITERS: 10
   WARMUP_METHOD: 'linear'
 
-  CHECKPOINT_PERIOD: 4
+  CHECKPOINT_PERIOD: 10
   LOG_PERIOD: 10  # Number of batches between logs.
-  EVAL_PERIOD: 4
+  EVAL_PERIOD: 10
 
   CYTHON: True
 
 TEST:
   IMS_PER_BATCH: 16
   DEBUG: True
-  WEIGHT: "./outputs/market1501/resnet50_epoch45.pth"
+  WEIGHT: "./outputs/market1501/resnet50_epoch80.pth"
 
 OUTPUT_DIR: "./outputs/market1501"
