@@ -21,7 +21,8 @@ _C.MODEL.DEVICE = "cuda"
 _C.MODEL.NAME = 'resnet50'
 _C.MODEL.LAST_STRIDE = 1
 _C.MODEL.LABEL_SMOOTH = False
-_C.MODEL.PRETRAIN_PATH = ''
+_C.MODEL.PRETRAINED = True
+
 # -----------------------------------------------------------------------------
 # INPUT
 # -----------------------------------------------------------------------------

@@ -26,19 +26,18 @@ def weights_init_classifier(m):
 
 
 class Baseline(nn.Module):
-    in_planes = 2048
+    _EMB_SIZE = 2048
 
     def __init__(self, num_classes, base):
-        super(Baseline, self).__init__()
+        super().__init__()
+
         self.base = base
-        self.gap = nn.AdaptiveAvgPool2d(1)
-        # self.gap = nn.AdaptiveMaxPool2d(1)
         self.num_classes = num_classes
 
-        self.bottleneck = nn.BatchNorm1d(self.in_planes)
+        self.bottleneck = nn.BatchNorm1d(self._EMB_SIZE)
         self.bottleneck.bias.requires_grad_(False)  # no shift
         self.classifier = nn.Linear(
-            self.in_planes, self.num_classes, bias=False
+            self._EMB_SIZE, self.num_classes, bias=False
         )
 
         self.bottleneck.apply(weights_init_kaiming)
@@ -53,7 +52,7 @@ class Baseline(nn.Module):
             self.state_dict()[i].copy_(param[i])
 
     def forward(self, x):
-        global_feat = self.gap(self.base(x))  # (b, 2048, 1, 1)
+        global_feat = self.base(x)  # (b, 2048, 1, 1)
         global_feat = global_feat.view(
             global_feat.shape[0], -1
         )  # flatten to (bs, 2048)
