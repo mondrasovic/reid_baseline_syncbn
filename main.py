@@ -79,7 +79,8 @@ def train(args):
         os.makedirs(output_dir)
     shutil.copy(args.config_file, cfg.OUTPUT_DIR)
 
-    num_gpus = torch.cuda.device_count()
+    # num_gpus = torch.cuda.device_count()
+    num_gpus = 1
 
     logger = setup_logger('reid_baseline', output_dir, 0)
     logger.info('Using {} GPUS'.format(num_gpus))
