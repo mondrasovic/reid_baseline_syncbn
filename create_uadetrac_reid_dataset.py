@@ -55,10 +55,12 @@ class VeRiDatasetWriter():
         output_dir_path,
         start_obj_id=0,
         start_img_id=0,
-        context=0.0
+        context=0.0,
+        save_kth_occurr=1
     ) -> None:
         assert start_obj_id >= 0, "object ID must be non-negative"
         assert start_img_id >= 0, "image ID must be non-negative"
+        assert save_kth_occurr > 0, "k-th occurence must be positive"
 
         self.dataset_dir_path = dataset_dir_path
         self.output_dir_path = output_dir_path
@@ -67,6 +69,7 @@ class VeRiDatasetWriter():
         self.img_id_iter = itertools.count(start=start_img_id)
 
         self.context = context
+        self.save_kth_occurr = save_kth_occurr
 
         if os.path.exists(self.output_dir_path):
             shutil.rmtree(self.output_dir_path)
@@ -74,7 +77,7 @@ class VeRiDatasetWriter():
     
     def process_sample(self, sample_iter):
         obj_id_map = {}
-        cam_id_iter_map = collections.defaultdict(lambda: itertools.count())
+        occurr_iter_map = collections.defaultdict(lambda: itertools.count())
 
         for img_rel_file_path, targets_iter in sample_iter:
             img_file_path = os.path.join(
@@ -83,11 +86,16 @@ class VeRiDatasetWriter():
             img = cv.imread(img_file_path, cv.IMREAD_COLOR)
 
             for obj_id, bbox in targets_iter:
+                obj_occurr_id = next(occurr_iter_map[obj_id])
+                if obj_occurr_id % self.save_kth_occurr != 0:
+                    continue
+
                 glob_obj_id = obj_id_map.get(obj_id)
                 if not glob_obj_id:
                     glob_obj_id = next(self.obj_id_iter)
                     obj_id_map[obj_id] = glob_obj_id
-                cam_id = next(cam_id_iter_map[obj_id])
+ 
+                cam_id = obj_occurr_id
                 img_id = next(self.img_id_iter)
                 
                 file_name = f'{glob_obj_id:04d}_c{cam_id:03d}_{img_id:07d}.jpg'
@@ -123,6 +131,10 @@ class VeRiDatasetWriter():
     help="Bounding box context."
 )
 @click.option(
+    '-k', '--save-kth-occurr', type=int, default=3, show_default=True,
+    help="Save only every k-th occurrence of a specific object."
+)
+@click.option(
     '--subset-type', type=click.Choice(['train', 'test']), default='train',
     show_default=True, help="Data subset type."
 )
@@ -132,13 +144,15 @@ def main(
     start_obj_id,
     start_img_id,
     context,
-    subset_type
+    subset_type,
+    save_kth_occurr
 ):
     """Creates a VeRi-like dataset for vehicle re-identification (ReID) based on
     UA-DETRAC multiple object tracking dataset.
     """
     dataset_writer = VeRiDatasetWriter(
-        input_dir_path, output_dir_path, start_obj_id, start_img_id, context
+        input_dir_path, output_dir_path, start_obj_id, start_img_id, context,
+        save_kth_occurr
     )
 
     anno_dir_name = '540p-' + subset_type.capitalize()
