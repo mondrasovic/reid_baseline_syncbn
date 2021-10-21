@@ -50,4 +50,4 @@ TEST:
   DEBUG: True
   WEIGHT: "./outputs/UA-DETRAC_ReID/resnet50_epoch130.pth"
 
-OUTPUT_DIR: "./outputs/UA-DETRAC_ReID"
+OUTPUT_DIR: "./outputs/UA-DETRAC_ReID_bs128"
