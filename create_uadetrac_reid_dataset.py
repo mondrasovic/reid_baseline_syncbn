@@ -102,10 +102,10 @@ class VeRiDatasetWriter():
                 output_img_file_path = os.path.join(
                     self.output_dir_path, file_name
                 )
-                
+
                 roi = self._extract_bbox(img, bbox)
-                size_valid = min(roi.shape[0], roi.shape[1]) < self.min_size
-                if (roi is not None) or size_valid:
+                size_invalid = min(roi.shape[0], roi.shape[1]) < self.min_size
+                if (roi is None) or size_invalid:
                     continue
                 
                 cv.imwrite(output_img_file_path, roi)
