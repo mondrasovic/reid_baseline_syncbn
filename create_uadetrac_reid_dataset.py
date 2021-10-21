@@ -13,17 +13,14 @@ from xml.etree import ElementTree
 
 
 def iter_frame_targets(frame):
-    def _coord(x):
-        return int(round(float(x)))
-
     for target in frame.findall('.//target'):
         obj_id = int(target.attrib['id'])
 
         box_attr = target.find('box').attrib
-        x = _coord(box_attr['left'])
-        y = _coord(box_attr['top'])
-        w = _coord(box_attr['width'])
-        h = _coord(box_attr['height'])
+        x = float(box_attr['left'])
+        y = float(box_attr['top'])
+        w = float(box_attr['width'])
+        h = float(box_attr['height'])
         bbox = (x, y, w, h)
 
         yield obj_id, bbox
@@ -56,11 +53,13 @@ class VeRiDatasetWriter():
         start_obj_id=0,
         start_img_id=0,
         context=0.0,
-        save_kth_occurr=1
+        save_kth_occurr=1,
+        min_size=1
     ) -> None:
         assert start_obj_id >= 0, "object ID must be non-negative"
         assert start_img_id >= 0, "image ID must be non-negative"
         assert save_kth_occurr > 0, "k-th occurence must be positive"
+        assert min_size > 0, "minimum side size must be positive"
 
         self.dataset_dir_path = dataset_dir_path
         self.output_dir_path = output_dir_path
@@ -70,6 +69,7 @@ class VeRiDatasetWriter():
 
         self.context = context
         self.save_kth_occurr = save_kth_occurr
+        self.min_size = min_size
 
         if os.path.exists(self.output_dir_path):
             shutil.rmtree(self.output_dir_path)
@@ -102,7 +102,11 @@ class VeRiDatasetWriter():
                 output_img_file_path = os.path.join(
                     self.output_dir_path, file_name
                 )
+                
                 roi = self._extract_bbox(img, bbox)
+                size_valid = min(roi.shape[0], roi.shape[1]) < self.min_size
+                if (roi is not None) or size_valid:
+                    continue
                 
                 cv.imwrite(output_img_file_path, roi)
     
@@ -142,6 +146,10 @@ class VeRiDatasetWriter():
     '--subset-type', type=click.Choice(['train', 'test']), default='train',
     show_default=True, help="Data subset type."
 )
+@click.option(
+    '-m', '--min-size', type=int, default=10, show_default=True,
+    help="Minimum ROI side size to save."
+)
 def main(
     input_dir_path,
     output_dir_path,
@@ -149,14 +157,15 @@ def main(
     start_img_id,
     context,
     subset_type,
-    save_kth_occurr
+    save_kth_occurr,
+    min_size
 ):
     """Creates a VeRi-like dataset for vehicle re-identification (ReID) based on
     UA-DETRAC multiple object tracking dataset.
     """
     dataset_writer = VeRiDatasetWriter(
         input_dir_path, output_dir_path, start_obj_id, start_img_id, context,
-        save_kth_occurr
+        save_kth_occurr, min_size
     )
 
     anno_dir_name = '540p-' + subset_type.capitalize()
