@@ -12,6 +12,7 @@ import cv2 as cv
 from xml.etree import ElementTree
 
 
+
 def iter_frame_targets(frame):
     for target in frame.findall('.//target'):
         obj_id = int(target.attrib['id'])
@@ -42,7 +43,6 @@ def iter_track_sample_content(xml_file_path, subset_type):
         targets_iter = iter_frame_targets(frame)
 
         yield img_file_path, targets_iter
-
 
 
 class VeRiDatasetWriter():

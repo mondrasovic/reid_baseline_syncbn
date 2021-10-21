@@ -1,0 +1,63 @@
+2021-10-21 10:57:16,376 reid_baseline INFO: Using 1 GPUS
+2021-10-21 10:57:16,376 reid_baseline INFO: Namespace(config_file='configs/uadetrac_reid_fri.yml', local_rank=0, opts=[], test=False)
+2021-10-21 10:57:16,377 reid_baseline INFO: Running with config:
+DATALOADER:
+  NUM_INSTANCE: 32
+  NUM_WORKERS: 8
+  SAMPLER: softmax_triplet
+DATASETS:
+  DATA_PATH: /home/mond/s/ssd/datasets/UA-DETRAC_ReID
+  GALLERY_PATH: image_test
+  NAMES: uadetrac_reid_128bs
+  QUERY_PATH: image_query
+  TRAIN_PATH: image_train
+INPUT:
+  PADDING: 0
+  PIXEL_MEAN: [0.485, 0.456, 0.406]
+  PIXEL_STD: [0.229, 0.224, 0.225]
+  PROB: 0.5
+  RE_PROB: 0.5
+  SIZE_TEST: [224, 224]
+  SIZE_TRAIN: [224, 224]
+MODEL:
+  DEVICE: cuda
+  LABEL_SMOOTH: False
+  LAST_STRIDE: 1
+  NAME: resnet50
+  PRETRAINED: True
+OUTPUT_DIR: ./outputs/UA-DETRAC_ReID
+SOLVER:
+  BASE_LR: 0.0001
+  BIAS_LR_FACTOR: 1
+  CHECKPOINT_PERIOD: 10
+  CYTHON: True
+  EVAL_PERIOD: 10
+  FP16: True
+  GAMMA: 0.6
+  IMS_PER_BATCH: 128
+  LOG_PERIOD: 100
+  MARGIN: 0.3
+  MAX_EPOCHS: 130
+  MOMENTUM: 0.9
+  OPTIMIZER_NAME: Adam
+  STEPS: (20, 30, 50, 80, 120)
+  WARMUP_FACTOR: 0.01
+  WARMUP_ITERS: 10
+  WARMUP_METHOD: linear
+  WEIGHT_DECAY: 0.0007
+  WEIGHT_DECAY_BIAS: 0.0007
+TEST:
+  CMC: [1, 5, 10]
+  DEBUG: True
+  IMS_PER_BATCH: 128
+  MULTI_GPU: False
+  RERANK: True
+  VIS: False
+  VIS_G_NUM: 5
+  VIS_Q_NUM: 10
+  WEIGHT: ./outputs/UA-DETRAC_ReID/resnet50_epoch130.pth
+2021-10-21 10:57:23,781 reid_baseline.train INFO: Using fp16 training
+2021-10-21 10:57:23,781 reid_baseline.train INFO: Trainer Built
+2021-10-21 10:57:23,782 reid_baseline.train INFO: restoring latest checkpoint for epoch 100
+2021-10-21 10:57:23,782 reid_baseline.train INFO: loading model weights from outputs/UA-DETRAC_ReID/resnet50_epoch100.pth
+2021-10-21 10:57:23,932 reid_baseline.train INFO: loading optimizer weights from outputs/UA-DETRAC_ReID/resnet50_epoch100_optim.pth
