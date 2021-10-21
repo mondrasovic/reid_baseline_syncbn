@@ -104,8 +104,7 @@ class VeRiDatasetWriter():
                 )
 
                 roi = self._extract_bbox(img, bbox)
-                size_invalid = min(roi.shape[0], roi.shape[1]) < self.min_size
-                if (roi is None) or size_invalid:
+                if min(roi.shape[0], roi.shape[1]) < self.min_size:
                     continue
                 
                 cv.imwrite(output_img_file_path, roi)
@@ -118,6 +117,7 @@ class VeRiDatasetWriter():
         w_half, h_half = w_scaled / 2, h_scaled / 2
         x1, y1 = int(round(cx - w_half)), int(round(cy - h_half))
         x2, y2 = int(round(cx + w_half)), int(round(cy + h_half))
+        x1, y1 = max(x1, 0), max(y1, 0)
         roi = img[y1:y2, x1:x2]
 
         return roi

@@ -100,7 +100,7 @@ class BaseTrainer(object):
         self.batch_cnt += 1
         if self.batch_cnt % self.cfg.SOLVER.LOG_PERIOD == 0:
             self.logger.info(
-                'Epoch[{}] Iteration[{}/{}] Loss: {:.4f},'
+                'Epoch[{}] Iteration[{}/{}] Loss: {:.4f}, '
                 'Acc: {:.5f}, Base Lr: {:.4e}'.format(
                     self.train_epoch, self.batch_cnt, len(self.train_dl),
                     self.loss_avg.avg, self.acc_avg.avg,
