@@ -108,9 +108,13 @@ class VeRiDatasetWriter():
     
     def _extract_bbox(self, img, bbox):
         x, y, w, h = bbox
-        w = int(round(w * (1 + self.context)))
-        h = int(round(h * (1 + self.context)))
-        roi = img[y:y + h, x:x + w]
+        cx, cy = x + (w / 2), y + (h / 2)
+        w_scaled = w * (1 + self.context)
+        h_scaled = h * (1 + self.context)
+        w_half, h_half = w_scaled / 2, h_scaled / 2
+        x1, y1 = int(round(cx - w_half)), int(round(cy - h_half))
+        x2, y2 = int(round(cx + w_half)), int(round(cy + h_half))
+        roi = img[y1:y2, x1:x2]
 
         return roi
 
@@ -127,7 +131,7 @@ class VeRiDatasetWriter():
     help="Initial image ID (unique within dataset)."
 )
 @click.option(
-    '-c', '--context', type=float, default=0.25, show_default=True,
+    '-c', '--context', type=float, default=0.2, show_default=True,
     help="Bounding box context."
 )
 @click.option(
